@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Analytics Portfolio — Moussokoura Assoumou, PhD</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+/* ── RESET & TOKENS ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:       #dce8f0;
+  --surface:  #ffffff;
+  --surface2: #eaf2f7;
+  --border:   #c8dce8;
+  --accent:   #047857;   /* emerald-700 */
+  --accent2:  #065f46;   /* emerald-800 */
+  --accent3:  #0e7490;   /* ocean blue */
+  --accent4:  #059669;   /* emerald-600 */
+  --text:     #0f2335;
+  --muted:    #4a7a8a;
+  --green:    #10b981;
+  --red:      #dc2626;
+  --r:        10px;
+  --r-sm:     6px;
+}
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 0;
+}
+
+/* ── NAV TABS ── */
+.nav {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0 1.5rem;
+  overflow-x: auto;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.nav-brand {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 1rem 1.25rem 1rem 0;
+  border-right: 1px solid var(--border);
+  margin-right: 0.75rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.tab {
+  padding: 1rem 1.25rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: color 0.15s, border-color 0.15s;
+  user-select: none;
+}
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* ── MAIN CONTENT ── */
+.pages { padding: 1.5rem; max-width: 1280px; margin: 0 auto; }
+.page { display: none; }
+.page.active { display: block; }
+
+/* ── PAGE HEADER ── */
+.page-head {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem;
+  margin-bottom: 1.25rem; flex-wrap: wrap;
+}
+.page-head-left h2 { font-size: 1.1rem; font-weight: 600; color: var(--text); }
+.page-head-left p { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
+.page-head-right { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+/* ── SLICERS ── */
+.slicer-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-right: 4px; }
+.slicer {
+  background: var(--surface2); border: 1px solid var(--border);
+  color: var(--text); font-family: 'Inter', sans-serif;
+  font-size: 0.78rem; padding: 5px 10px; border-radius: var(--r-sm);
+  cursor: pointer; outline: none;
+  appearance: none; -webkit-appearance: none;
+}
+.slicer:focus { border-color: var(--accent); }
+.pill-group { display: flex; gap: 4px; }
+.pill {
+  padding: 4px 10px; font-size: 0.75rem; border-radius: 20px;
+  border: 1px solid var(--border); background: var(--surface2);
+  color: var(--muted); cursor: pointer; transition: all 0.15s; user-select: none;
+}
+.pill:hover { color: var(--text); border-color: var(--muted); }
+.pill.active { background: var(--accent); color: #0f1117; border-color: var(--accent); font-weight: 600; }
+
+/* ── KPI CARDS ── */
+.kpi-row { display: grid; gap: 12px; margin-bottom: 1.25rem; }
+.kpi-row-4 { grid-template-columns: repeat(4, 1fr); }
+.kpi-row-3 { grid-template-columns: repeat(3, 1fr); }
+.kpi {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 1rem 1.1rem;
+  position: relative; overflow: hidden;
+}
+.kpi::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+}
+.kpi.c1::before { background: var(--accent); }
+.kpi.c2::before { background: var(--accent2); }
+.kpi.c3::before { background: var(--accent3); }
+.kpi.c4::before { background: var(--accent4); }
+.kpi-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+.kpi-value { font-size: 1.75rem; font-weight: 700; line-height: 1; }
+.kpi.c1 .kpi-value { color: var(--accent); }
+.kpi.c2 .kpi-value { color: var(--accent2); }
+.kpi.c3 .kpi-value { color: var(--accent3); }
+.kpi.c4 .kpi-value { color: var(--accent4); }
+.kpi-sub { font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
+.kpi-delta { font-size: 0.75rem; font-weight: 600; }
+.kpi-delta.up { color: var(--green); }
+.kpi-delta.dn { color: var(--red); }
+
+/* ── GRID LAYOUTS ── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.grid-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 12px; margin-bottom: 12px; }
+.grid-1-2 { display: grid; grid-template-columns: 1fr 2fr; gap: 12px; margin-bottom: 12px; }
+
+/* ── PANELS ── */
+.panel {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 1rem 1.1rem;
+}
+.panel-title {
+  font-size: 0.75rem; font-weight: 600; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.06em;
+  margin-bottom: 0.9rem; display: flex; align-items: center; gap: 6px;
+}
+.panel-title .dot { width: 6px; height: 6px; border-radius: 50%; }
+.chart-box { position: relative; width: 100%; }
+.h160 { height: 160px; }
+.h200 { height: 200px; }
+.h240 { height: 240px; }
+.h280 { height: 280px; }
+.h320 { height: 320px; }
+
+/* ── TABLE ── */
+.data-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+.data-table thead th {
+  text-align: left; padding: 6px 10px;
+  font-size: 0.7rem; font-weight: 600; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border);
+}
+.data-table tbody td { padding: 7px 10px; border-bottom: 1px solid rgba(0,0,0,0.05); color: var(--text); }
+.data-table tbody tr:last-child td { border-bottom: none; }
+.data-table tbody tr:hover td { background: rgba(4,120,87,0.05); }
+.badge-pill {
+  display: inline-block; padding: 2px 8px; border-radius: 12px;
+  font-size: 0.68rem; font-weight: 600;
+}
+.badge-green { background: rgba(74,222,128,0.15); color: var(--green); }
+.badge-red { background: rgba(248,113,113,0.15); color: var(--red); }
+.badge-amber { background: rgba(251,146,60,0.15); color: var(--accent3); }
+.badge-teal { background: rgba(45,212,191,0.15); color: var(--accent); }
+.badge-indigo { background: rgba(129,140,248,0.15); color: var(--accent2); }
+
+/* ── PROGRESS BARS ── */
+.prog-row { margin-bottom: 10px; }
+.prog-label { display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 4px; }
+.prog-label span:last-child { color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; }
+.prog-track { background: var(--surface2); border-radius: 3px; height: 6px; overflow: hidden; }
+.prog-fill { height: 100%; border-radius: 3px; transition: width 0.8s ease; }
+
+/* ── SPARKLINE INLINES ── */
+.spark-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
+.spark-row:last-child { border-bottom: none; }
+.spark-name { font-size: 0.8rem; min-width: 130px; }
+.spark-val { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--accent); min-width: 50px; text-align: right; margin-left: auto; }
+.spark-canvas { flex: 1; height: 28px; }
+
+/* ── FOOTER ── */
+.footer {
+  text-align: center; padding: 1.5rem;
+  font-size: 0.72rem; color: var(--muted);
+  border-top: 1px solid var(--border);
+  font-family: 'JetBrains Mono', monospace;
+  margin-top: 1.5rem;
+}
+
+/* ── SKILL CHIP ── */
+.skill-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 6px; padding: 5px 10px; font-size: 0.75rem; margin: 3px;
+}
+.skill-chip .dot { width: 6px; height: 6px; border-radius: 50%; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .kpi-row-4 { grid-template-columns: repeat(2,1fr); }
+  .kpi-row-3 { grid-template-columns: repeat(2,1fr); }
+  .grid-2, .grid-3, .grid-2-1, .grid-1-2 { grid-template-columns: 1fr; }
+  .pages { padding: 1rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-brand">M. Assoumou, PhD · Analytics Portfolio</div>
+  <div class="tab active" onclick="showPage(0,this)">📊 Disease Surveillance</div>
+  <div class="tab" onclick="showPage(1,this)">🏥 Infection Control</div>
+  <div class="tab" onclick="showPage(2,this)">📈 Program Performance</div>
+  <div class="tab" onclick="showPage(3,this)">🔬 Epi Analytics</div>
+</nav>
+
+<div class="pages">
+
+<!-- ═══════════════════════════════════════════
+     PAGE 1: DISEASE SURVEILLANCE DASHBOARD
+════════════════════════════════════════════ -->
+<div class="page active" id="page-0">
+  <div class="page-head">
+    <div class="page-head-left">
+      <h2>Disease Surveillance Command Center</h2>
+      <p>Communicable disease trends · Virginia Health Districts · 2020–2024</p>
+    </div>
+    <div class="page-head-right">
+      <span class="slicer-label">Year</span>
+      <select class="slicer" id="yearSlicer" onchange="updateSurveillance()">
+        <option value="all">All Years</option>
+        <option value="2020">2020</option>
+        <option value="2021">2021</option>
+        <option value="2022">2022</option>
+        <option value="2023">2023</option>
+        <option value="2024">2024</option>
+      </select>
+      <span class="slicer-label" style="margin-left:8px">Disease</span>
+      <select class="slicer" id="diseaseSlicer" onchange="updateSurveillance()">
+        <option value="all">All Diseases</option>
+        <option value="covid">COVID-19</option>
+        <option value="flu">Influenza</option>
+        <option value="tb">Tuberculosis</option>
+        <option value="hiv">HIV</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="kpi-row kpi-row-4">
+    <div class="kpi c1">
+      <div class="kpi-label">Total Cases Investigated</div>
+      <div class="kpi-value" id="kpi-cases">20,847</div>
+      <div class="kpi-sub"><span class="kpi-delta up">↑ 12.4%</span> vs prior period</div>
+    </div>
+    <div class="kpi c2">
+      <div class="kpi-label">Avg. Case Resolution (Days)</div>
+      <div class="kpi-value" id="kpi-resolution">4.2</div>
+      <div class="kpi-sub"><span class="kpi-delta up">↓ 1.8 days</span> improvement</div>
+    </div>
+    <div class="kpi c3">
+      <div class="kpi-label">Contact Tracing Rate</div>
+      <div class="kpi-value" id="kpi-trace">87%</div>
+      <div class="kpi-sub"><span class="kpi-delta up">↑ 5pp</span> above state target</div>
+    </div>
+    <div class="kpi c4">
+      <div class="kpi-label">Districts Monitored</div>
+      <div class="kpi-value" id="kpi-districts">5</div>
+      <div class="kpi-sub">Alexandria, Arlington, Fairfax, PWC, Loudoun</div>
+    </div>
+  </div>
+
+  <div class="grid-2-1">
+    <div class="panel">
+      <div class="panel-title"><span class="dot" style="background:var(--accent)"></span>Weekly Case Incidence by Disease (2020–2024)</div>
+      <div class="chart-box h240"><canvas id="incidenceChart"></canvas></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title"><span class="dot" style="background:var(--accent2)"></span>Case Distribution by District</div>
+      <div class="chart-box h240"><canvas id="districtChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="grid-3">
+    <div class="panel">
+      <div class="panel-title"><span class="dot" style="background:var(--accent3)"></span>Outbreak Investigations by Type</div>
+      <div class="chart-box h200"><canvas id="outbreakChart"></canvas></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title"><span class="dot" style="background:var(--accent4)"></span>Case Completion Rate by Month</div>
+      <div class="chart-box h200"><canvas id="completionChart"></canvas></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title"><span class="dot" style="background:var(--accent)"></span>Disease Rankings (Attack Rate/100K)</div>
+      <div style="margin-top:4px">
+        <div class="prog-row"><div class="prog-label"><span>COVID-19</span><span>1,847</span></div><div class="prog-track"><div class="prog-fill" style="width:95%;background:var(--accent)"></div></div></div>
+        <div class="prog-row"><div class="prog-label"><span>Influenza</span><span>412</span></div><div class="prog-track"><div class="prog-fill" style="width:52%;background:var(--accent2)"></div></div></div>
+        <div class="prog-row"><div class="prog-label"><span>HIV/AIDS</span><span>98</span></div><div class="prog-track"><div class="prog-fill" style="width:28%;background:var(--accent3)"></div></div></div>
+        <div class="prog-row"><div class="prog-label"><span>Tuberculosis</span><span>42</span></div><div class="prog-track"><div class="prog-fill" style="width:15%;background:var(--accent4)"></div></div></div>
+        <div class="prog-row"><div class="prog-label"><span>Hepatitis A</span><span>28</span></div><div class="prog-track"><div class="prog-fill" style="width:10%;background:var(--green)"></div></div></div>
+        <div class="prog-row"><div class="prog-label"><span>Salmonella</span><span>19</span></div><div class="prog-track"><div class="prog-fill" style="width:7%;background:var(--red)"></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title"><span class="dot" style="background:var(--accent2)"></span>Case Investigation Log — Recent Activity</div>
+    <table class="data-table">
+      <thead><tr><th>Case ID</th><th>Disease</th><th>District</th><th>Reported</th><th>Contacts ID'd</th><th>Resolution (Days)</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem">#CI-20847</td><td>COVID-19</td><td>Alexandria</td><td>2024-03-12</td><td>14</td><td>3</td><td><span class="badge-pill badge-green">Closed</span></td></tr>
+        <tr><td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem">#CI-20846</td><td>Influenza A</td><td>Fairfax</td><td>2024-03-11</td><td>7</td><td>2</td><td><span class="badge-pill badge-green">Closed</span></td></tr>
+        <tr><td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem">#CI-20845</td><td>Tuberculosis</td><td>Arlington</td><td>2024-03-10</td><td>22</td><td>18</td><td><span class="badge-pill badge-amber">In Progress</span></td></tr>
+        <tr><td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem">#CI-20844</td><td>COVID-19</td><td>PWC</td><td>2024-03-10</td><td>9</td><td>4</td><td><span class="badge-pill badge-green">Closed</span></td></tr>
+        <tr><td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem">#CI-20843</td><td>Hepatitis A</td><td>Loudoun</td><td>2024-03-09</td><td>31</td><td>—</td><td><span class="badge-pill badge-red">Escalated</span></td></tr>
+        <tr><td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem">#CI-20842</td><td>HIV</td><td>Alexandria</td><td>2024-03-08</td><td>5</td><td>6</td><td><span class="badge-pill badge-green">Closed</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     PAGE 2: INFECTION CONTROL DASHBOARD
+════════════════════════════════════════════ -->
+<div class="page" id="page-1">
+  <div class="page-head">
+    <div class="page-head-left">
+      <h2>Infection Control Performance Dashboard</h2>
+      <p>HAI rates · MDRO trends · IPC compliance · Long-term care facilities</p>
+    </div>
+    <div class="page-head-right">
+      <span class="slicer-label">Facility Type</span>
+      <select class="slicer" id="facilityType">
+        <option>All Facilities</option>
+        <option>Skilled Nursing</option>
+        <option>Assisted Living</option>
+        <option>Acute Care Hospital</option>
+        <option>Outpatient Clinic</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="kpi-row kpi-row-4">
+    <div class="kpi c1">
+      <div class="kpi-label">HAI Rate Reduction</div>
+      <div class="kpi-value">90%</div>
+      <div class="kpi-sub"><span class="kpi-delta up">↓ achieved</span> in LTC settings</div>
+    </div>
+    <div class="kpi c2">
+      <div class="kpi-label">Outbreaks Investigated</div>
+      <div class="kpi-value">100+</div>
+      <div class="kpi-sub">Across 5 health districts · 2023–2025</div>
+    </div>
+    <div class="kpi c3">
+      <div class="kpi-label">IPC Protocol Compliance</div>
+      <div class="kpi-value">94%</div>
+      <div class="kpi-sub"><span class="kpi-delta up">↑ 18pp</span> post-intervention</div>
+    </div>
+    <div class="kpi c4">
+      <div class="kpi-label">MDRO Isolations Prevented</div>
+      <div class="kpi-value">347</div>
+      <div class="kpi-sub">Estimated via contact precautions</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-title"><span class="dot" style="background:var(--accent)"></span>HAI Rate Trend — Before vs After Intervention</div>
+      <div class="chart-box h240"><canvas id="haiTrendChart"></canvas></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title"><span class="dot" style="background:var(--accent3)"></span>MDRO Pathogen Distribution</div>
+      <div class="chart-box h240"><canvas id="mdroChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="grid-2-1">
+    <div class="panel">
+      <div class="panel-title"><span class="dot" style="background:var(--accent2)"></span>IPC Bundle Compliance by Facility (%) — Monthly Audit</div>
+      <div class="chart-box h240"><canvas id="complianceChart"></canvas></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title"><span class="dot" style="background:var(--accent4)"></span>Outbreak Containment Speed</div>
+      <div style="margin-top:6px">
+        <div class="spark-row">
+          <span class="spark-name">Respiratory (COVID)</span>
+          <canvas class="spark-canvas" id="spark1"></canvas>
+          <span class="spark-val">3.2 days</span>
+        </div>
+        <div class="spark-row">
+          <span class="spark-name">GI / Norovirus</span>
+          <canvas class="spark-canvas" id="spark2"></canvas>
+          <span class="spark-val">4.7 days</span>
+        </div>
+        <div class="spark-row">
+          <span class="spark-name">MRSA Skin/Soft</span>
+          <canvas class="spark-canvas" id="spark3"></canvas>
+          <span class="spark-val">5.9 days</span>
+        </div>
+        <div class="spark-row">
+          <span class="spark-name">C. diff (CDI)</span>
+          <canvas class="spark-canvas" id="spark4"></canvas>
+          <span class="spark-val">6.1 days</span>
+        </div>
+        <div class="spark-row">
+          <span class="spark-name">Influenza</span>
+          <canvas class="spark-canvas" id="spark5"></canvas>
+          <span class="spark-val">2.8 days</span>
+        </div>
+      </div>
+      <div style="font-size:0.72rem;color:var(--muted);margin-top:0.75rem;">Avg. days from detection to containment. Sparklines show trend over last 6 outbreaks.</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title"><span class="dot" style="background:var(--accent)"></span>Facility-Level IPC Scorecard</div>
+    <table class="data-table">
+      <thead><tr><th>Facility</th><th>Type</th><th>HAI Rate (per 1K)</th><th>Compliance</th><th>Last Audit</th><th>Active Outbreaks</th><th>IPC Risk</th></tr></thead>
+      <tbody>
+        <tr><td>Sunrise SNF</td><td>Skilled Nursing</td><td style="font-family:'JetBrains Mono',monospace">1.2</td><td>97%</td><td>2024-02-28</td><td>0</td><td><span class="badge-pill badge-green">Low</span></td></tr>
+        <tr><td>Riverside ALF</td><td>Assisted Living</td><td style="font-family:'JetBrains Mono',monospace">2.1</td><td>91%</td><td>2024-02-20</td><td>1</td><td><span class="badge-pill badge-amber">Medium</span></td></tr>
+        <tr><td>Valley Medical Ctr</td><td>Acute Care</td><td style="font-family:'JetBrains Mono',monospace">0.8</td><td>99%</td><td>2024-03-01</td><td>0</td><td><span class="badge-pill badge-green">Low</span></td></tr>
+        <tr><td>Greenfield SNF</td><td>Skilled Nursing</td><td style="font-family:'JetBrains Mono',monospace">4.7</td><td>74%</td><td>2024-01-15</td><td>2</td><td><span class="badge-pill badge-red">High</span></td></tr>
+        <tr><td>NovaCare Clinic</td><td>Outpatient</td><td style="font-family:'JetBrains Mono',monospace">0.3</td><td>98%</td><td>2024-03-05</td><td>0</td><td><span class="badge-pill badge-green">Low</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     PAGE 3: PROGRAM PERFORMANCE DASHBOARD
+════════════════════════════════════════════ -->
+<div class="page" id="page-2">
+  <div class="page-head">
+    <div class="page-head-left">
+      <h2>Public Health Program Performance</h2>
+      <p>Workforce metrics · Data quality · COVID-19 operations · Prior Authorization analytics</p>
+    </div>
+    <div class="page-head-right">
+      <div class="pill-group">
+        <div class="pill active" onclick="setProgramFilter('all', this)">All Programs</div>
+        <div class="pill" onclick="setProgramFilter('covid', this)">COVID Ops</div>
+        <div class="pill" onclick="setProgramFilter('ipc', this)">IPC</div>
+        <div class="pill" onclick="setProgramFilter('pa', this)">Prior Auth</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="kpi-row kpi-row-4">
+    <div class="kpi c1">
+      <div class="kpi-label">Team Members Managed</div>
+      <div class="kpi-value">50</div>
+      <div class="kpi-sub">Peak COVID-19 surge · AHD 2021</div>
+    </div>
+    <div class="kpi c2">
+      <div class="kpi-label">Data Accuracy Improvement</div>
+      <div class="kpi-value">+25%</div>
+      <div class="kpi-sub"><span class="kpi-delta up">↑ via QA protocols</span></div>
+    </div>
+    <div class="kpi c3">
+      <div class="kpi-label">Program Reports Delivered</div>
+      <div class="kpi-value">240+</div>
+      <div class="kpi-sub">Epidemiologic briefs to leadership</div>
+    </div>
+    <div class="kpi c4">
+      <div class="kpi-label">PA Turnaround (Avg.)</div>
+      <div class="kpi-value">2.1d</div>
+      <div class="kpi-sub"><span class="kpi-delta up">↓ 38%</span> below CMS benchmark</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-title"><span class="dot" style="background:var(--accent)"></span>COVID-19 Operations — Weekly Volume (2020–2021)</div>
+      <div class="chart-box h240"><canvas id="covidOpsChart"></canvas></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title"><span class="dot" style="background:var(--accent2)"></span>Data Quality Score Over Time (%)</div>
+      <div class="chart-box h240"><canvas id="dataQualityChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="grid-3">
+    <div class="panel">
+      <div class="panel-title"><span class="dot" style="background:var(--accent3)"></span>Prior Authorization — Outcome Mix</div>
+      <div class="chart-box h200"><canvas id="paOutcomeChart"></canvas></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title"><span class="dot" style="background:var(--accent4)"></span>Staff Productivity by Role</div>
+      <div style="margin-top:4px">
+        <div class="prog-row"><div class="prog-label"><span>Case Investigators</span><span>42 cases/wk</span></div><div class="prog-track"><div class="prog-fill" style="width:88%;background:var(--accent)"></div></div></div>
+        <div class="prog-row"><div class="prog-label"><span>Contact Tracers</span><span>38 contacts/wk</span></div><div class="prog-track"><div class="prog-fill" style="width:80%;background:var(--accent2)"></div></div></div>
+        <div class="prog-row"><div class="prog-label"><span>Data Entry Staff</span><span>99% accuracy</span></div><div class="prog-track"><div class="prog-fill" style="width:99%;background:var(--accent3)"></div></div></div>
+        <div class="prog-row"><div class="prog-label"><span>Supervisors</span><span>100% report rate</span></div><div class="prog-track"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div></div>
+        <div class="prog-row"><div class="prog-label"><span>PA Analysts</span><span>95% SLA met</span></div><div class="prog-track"><div class="prog-fill" style="width:95%;background:var(--accent4)"></div></div></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-title"><span class="dot" style="background:var(--accent)"></span>Tools &amp; Platforms Used</div>
+      <div style="margin-top:4px">
+        <div><span class="skill-chip"><span class="dot" style="background:var(--accent)"></span>Power BI</span><span class="skill-chip"><span class="dot" style="background:var(--accent2)"></span>Stata</span><span class="skill-chip"><span class="dot" style="background:var(--accent3)"></span>Excel</span><span class="skill-chip"><span class="dot" style="background:var(--accent4)"></span>SPSS</span><span class="skill-chip"><span class="dot" style="background:var(--green)"></span>SQL</span><span class="skill-chip"><span class="dot" style="background:var(--red)"></span>Python</span><span class="skill-chip"><span class="dot" style="background:var(--accent)"></span>REDCap</span><span class="skill-chip"><span class="dot" style="background:var(--accent2)"></span>Tableau</span><span class="skill-chip"><span class="dot" style="background:var(--accent3)"></span>ESSENCE</span><span class="skill-chip"><span class="dot" style="background:var(--accent4)"></span>VHIS</span><span class="skill-chip"><span class="dot" style="background:var(--accent)"></span>MAVEN</span><span class="skill-chip"><span class="dot" style="background:var(--accent2)"></span>MS Project</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title"><span class="dot" style="background:var(--accent2)"></span>Program Milestone Tracker</div>
+    <table class="data-table">
+      <thead><tr><th>Program</th><th>Milestone</th><th>Target</th><th>Achieved</th><th>Lead</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>COVID-19 Ops</td><td>20K case investigations</td><td>Dec 2021</td><td>Nov 2021</td><td>M. Assoumou</td><td><span class="badge-pill badge-green">✓ Delivered Early</span></td></tr>
+        <tr><td>IPC Program</td><td>90% HAI reduction</td><td>Q4 2024</td><td>Q2 2024</td><td>M. Assoumou</td><td><span class="badge-pill badge-green">✓ Delivered Early</span></td></tr>
+        <tr><td>Data Quality</td><td>+25% accuracy</td><td>Q3 2022</td><td>Q3 2022</td><td>M. Assoumou</td><td><span class="badge-pill badge-green">✓ On Time</span></td></tr>
+        <tr><td>Prior Auth</td><td>PA SLA ≤ 2.5 days</td><td>Jan 2026</td><td>Dec 2025</td><td>M. Assoumou</td><td><span class="badge-pill badge-green">✓ Delivered Early</span></td></tr>
+        <tr><td>Outbreak Inv.</td><td>100+ investigations</td><td>Apr 2025</td><td>Dec 2024</td><td>M. Assoumou</td><td><span class="badge-pill badge-green">✓ Delivered Early</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     PAGE 4: EPI ANALYTICS DASHBOARD
+════════════════════════════════════════════ -->
+<div class="page" id="page-3">
+  <div class="page-head">
+    <div class="page-head-left">
+      <h2>Epidemiologic Analytics — Advanced Methods</h2>
+      <p>Statistical modeling · Risk stratification · Cohort analysis · CDC publication data</p>
+    </div>
+    <div class="page-head-right">
+      <span class="slicer-label">Analysis Type</span>
+      <select class="slicer">
+        <option>Descriptive Epidemiology</option>
+        <option>Analytic Epi (OR / RR)</option>
+        <option>Time Series</option>
+        <option>Survival Analysis</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="kpi-row kpi-row-3">
+    <div class="kpi c1">
+      <div class="kpi-label">Multistate Outbreak — Cases Analyzed</div>
+      <div class="kpi-value">1,247</div>
+      <div class="kpi-sub">CDC Publication · Emerging Infectious Diseases</div>
+    </div>
+    <div class="kpi c2">
+      <div class="kpi-label">States in Analysis</div>
+      <div class="kpi-value">7</div>
+      <div class="kpi-sub">SARS-CoV-2 multistate outbreak study</div>
+    </div>
+    <div class="kpi c3">
+      <div class="kpi-label">Statistical Methods Applied</div>
+      <div class="kpi-value">6+</div>
+      <div class="kpi-sub">Regression, survival, time-series, GIS, epi curves</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-title"><span class="dot" style="background:var(--accent)"></span>Epidemic Curve — SARS-CoV-2 Multistate Outbreak</div>
+      <div class="chart-box h260"><canvas id="epicurveChart"></canvas></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title"><span class="dot" style="background:var(--accent3)"></span>Age-Stratified Attack Rates (per 100K)</div>
+      <div class="chart-box h260"><canvas id="ageChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="grid-2-1">
+    <div class="panel">
+      <div class="panel-title"><span class="dot" style="background:var(--accent2)"></span>Risk Factor Analysis — Odds Ratios with 95% CI</div>
+      <div class="chart-box h260"><canvas id="orChart"></canvas></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title"><span class="dot" style="background:var(--accent4)"></span>Analytical Toolkit</div>
+      <div style="margin-top:6px">
+        <div class="prog-row"><div class="prog-label"><span>Stata (Regression, Survival)</span><span>Advanced</span></div><div class="prog-track"><div class="prog-fill" style="width:90%;background:var(--accent)"></div></div></div>
+        <div class="prog-row"><div class="prog-label"><span>SPSS (Descriptive Stats)</span><span>Advanced</span></div><div class="prog-track"><div class="prog-fill" style="width:85%;background:var(--accent2)"></div></div></div>
+        <div class="prog-row"><div class="prog-label"><span>Power BI (DAX, Visuals)</span><span>Certified</span></div><div class="prog-track"><div class="prog-fill" style="width:88%;background:var(--accent3)"></div></div></div>
+        <div class="prog-row"><div class="prog-label"><span>Python (Pandas, Matplotlib)</span><span>Proficient</span></div><div class="prog-track"><div class="prog-fill" style="width:70%;background:var(--accent4)"></div></div></div>
+        <div class="prog-row"><div class="prog-label"><span>SQL (Querying, Joins)</span><span>Proficient</span></div><div class="prog-track"><div class="prog-fill" style="width:72%;background:var(--green)"></div></div></div>
+        <div class="prog-row"><div class="prog-label"><span>Tableau / Excel Advanced</span><span>Advanced</span></div><div class="prog-track"><div class="prog-fill" style="width:83%;background:var(--red)"></div></div></div>
+      </div>
+      <div style="margin-top:1rem; padding: 0.75rem; background:rgba(4,120,87,0.08); border-radius:6px; border:1px solid rgba(4,120,87,0.25);">
+        <div style="font-size:0.72rem;font-weight:600;color:var(--accent);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.05em">Peer-Reviewed Publication</div>
+        <div style="font-size:0.78rem;color:var(--text);line-height:1.5;">Multistate Outbreak of SARS-CoV-2 Infections — <em>Emerging Infectious Diseases</em>, CDC (2021)</div>
+        <div style="font-size:0.72rem;color:var(--muted);margin-top:4px;">Methods: Descriptive epi, line list analysis, attack rate calculation, epi curve, risk factor assessment</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title"><span class="dot" style="background:var(--accent)"></span>Cohort Comparison — Vaccinated vs. Unvaccinated (Simulated Illustrative Data)</div>
+    <table class="data-table">
+      <thead><tr><th>Cohort</th><th>N</th><th>Attack Rate</th><th>Hospitalization Rate</th><th>Case Fatality Rate</th><th>Vaccine Effectiveness</th><th>Significance</th></tr></thead>
+      <tbody>
+        <tr><td>Unvaccinated</td><td style="font-family:'JetBrains Mono',monospace">4,820</td><td>28.4%</td><td>12.1%</td><td>1.8%</td><td>—</td><td><span class="badge-pill badge-indigo">Reference</span></td></tr>
+        <tr><td>2-dose mRNA</td><td style="font-family:'JetBrains Mono',monospace">6,310</td><td>7.2%</td><td>2.1%</td><td>0.3%</td><td>74.6%</td><td><span class="badge-pill badge-green">p &lt; 0.001</span></td></tr>
+        <tr><td>Booster dose</td><td style="font-family:'JetBrains Mono',monospace">3,140</td><td>3.8%</td><td>0.9%</td><td>0.1%</td><td>86.6%</td><td><span class="badge-pill badge-green">p &lt; 0.001</span></td></tr>
+        <tr><td>J&amp;J Single dose</td><td style="font-family:'JetBrains Mono',monospace">1,220</td><td>11.3%</td><td>3.4%</td><td>0.5%</td><td>60.2%</td><td><span class="badge-pill badge-green">p &lt; 0.01</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</div><!-- end .pages -->
+
+<div class="footer">
+  Moussokoura Assoumou, PhD, MPH, CPH, CIC, PMP, PL-300 · Data Analytics Portfolio · Built with Chart.js · Sample/illustrative data for demonstration purposes
+</div>
+
+<script>
+/* ─── HELPERS ─── */
+const C = (id) => document.getElementById(id);
+const CTX = (id) => C(id).getContext('2d');
+
+const TEAL   = '#047857';
+const INDIGO = '#065f46';
+const AMBER  = '#0e7490';
+const PINK   = '#059669';
+const GREEN  = '#10b981';
+const RED    = '#dc2626';
+const MUTED  = '#64748b';
+const SURFACE2 = '#eaf2f7';
+
+Chart.defaults.color = '#64748b';
+Chart.defaults.borderColor = 'rgba(0,0,0,0.06)';
+Chart.defaults.font.family = 'Inter, sans-serif';
+Chart.defaults.font.size = 11;
+Chart.defaults.plugins.legend.labels.boxWidth = 10;
+Chart.defaults.plugins.legend.labels.padding = 14;
+
+function gradFill(ctx, color, alpha1=0.3, alpha2=0) {
+  const g = ctx.createLinearGradient(0,0,0,400);
+  g.addColorStop(0, color.replace(')', `,${alpha1})`).replace('rgb','rgba'));
+  g.addColorStop(1, color.replace(')', `,${alpha2})`).replace('rgb','rgba'));
+  return g;
+}
+function hexToRgba(hex, a) {
+  const r = parseInt(hex.slice(1,3),16), g2 = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g2},${b},${a})`;
+}
+function makeGrad(ctx, color, a1=0.35, a2=0.02) {
+  const g = ctx.createLinearGradient(0,0,0,300);
+  g.addColorStop(0, hexToRgba(color, a1));
+  g.addColorStop(1, hexToRgba(color, a2));
+  return g;
+}
+
+/* ─── CHART DEFAULTS ─── */
+const lineDefaults = { tension: 0.4, pointRadius: 2, pointHoverRadius: 5, borderWidth: 2 };
+
+/* ─── PAGE 1 CHARTS ─── */
+// Incidence
+const incCtx = CTX('incidenceChart');
+const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const allMonths = [...months.map(m=>m+' 2020'),...months.map(m=>m+' 2021'),...months.map(m=>m+' 2022'),...months.map(m=>m+' 2023'),...months.map(m=>m+' 2024')].filter((_,i)=>i%3===0);
+new Chart(incCtx, {
+  type:'line',
+  data:{
+    labels: allMonths,
+    datasets:[
+      { label:'COVID-19', data:[120,280,840,1200,980,760,620,540,480,820,1100,940,860,780,640,580,520,480,420,380,340,310,290,270,240,220,200,180,160,150,140,130,120,115,110,105,100,95,90,85,80], ...lineDefaults, borderColor:TEAL, backgroundColor: makeGrad(incCtx,TEAL), fill:true },
+      { label:'Influenza', data:[60,90,110,40,20,10,8,6,8,30,80,120,70,100,130,50,18,10,7,5,7,28,90,140,80,110,150,60,20,10,8,6,8,35,95,150,85,115,160,65,22,12], ...lineDefaults, borderColor:AMBER, borderDash:[4,3], fill:false }
+    ]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{ position:'top', align:'end' } },
+    scales:{
+      x:{ ticks:{ maxRotation:45, font:{size:9} } },
+      y:{ ticks:{ callback:v=>v.toLocaleString() } }
+    }
+  }
+});
+
+// District doughnut
+new Chart(CTX('districtChart'), {
+  type:'doughnut',
+  data:{
+    labels:['Alexandria','Fairfax','Arlington','Prince William','Loudoun'],
+    datasets:[{ data:[28,35,18,12,7], backgroundColor:[TEAL,INDIGO,AMBER,PINK,GREEN], borderColor:'#ffffff', borderWidth:3, hoverOffset:6 }]
+  },
+  options:{ responsive:true, maintainAspectRatio:false, cutout:'65%', plugins:{legend:{position:'right'}} }
+});
+
+// Outbreak bar
+new Chart(CTX('outbreakChart'), {
+  type:'bar',
+  data:{
+    labels:['Respiratory','GI/Foodborne','Healthcare-Assoc','MDRO','Vector-borne','Other'],
+    datasets:[{ label:'# Outbreaks', data:[54,18,14,8,4,6], backgroundColor:[hexToRgba(TEAL,0.8),hexToRgba(INDIGO,0.8),hexToRgba(AMBER,0.8),hexToRgba(PINK,0.8),hexToRgba(GREEN,0.8),hexToRgba(RED,0.8)], borderRadius:4, borderSkipped:false }]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{ x:{ticks:{font:{size:9}}}, y:{beginAtZero:true} }
+  }
+});
+
+// Completion line
+const compCtx = CTX('completionChart');
+new Chart(compCtx, {
+  type:'line',
+  data:{
+    labels:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+    datasets:[{ label:'Completion Rate %', data:[72,75,80,83,85,87,88,89,90,91,91,92], ...lineDefaults, borderColor:PINK, backgroundColor:makeGrad(compCtx,PINK), fill:true }]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{ y:{ min:60, max:100, ticks:{ callback:v=>v+'%' } } }
+  }
+});
+
+/* ─── PAGE 2 CHARTS ─── */
+const haiCtx = CTX('haiTrendChart');
+const qLabels = ['Q1 22','Q2 22','Q3 22','Q4 22','Q1 23','Q2 23','Q3 23','Q4 23','Q1 24','Q2 24','Q3 24','Q4 24'];
+new Chart(haiCtx, {
+  type:'line',
+  data:{
+    labels: qLabels,
+    datasets:[
+      { label:'Before Intervention', data:[12.1,11.8,12.4,13.0,null,null,null,null,null,null,null,null], ...lineDefaults, borderColor:RED, backgroundColor:makeGrad(haiCtx,RED), fill:true, borderDash:[5,3] },
+      { label:'After Intervention', data:[null,null,null,12.8,10.2,7.6,5.1,3.4,2.2,1.8,1.5,1.2], ...lineDefaults, borderColor:TEAL, backgroundColor:makeGrad(haiCtx,TEAL), fill:true },
+      { label:'State Benchmark', data:[5,5,5,5,5,5,5,5,5,5,5,5], ...lineDefaults, borderColor:MUTED, borderDash:[3,3], pointRadius:0, fill:false }
+    ]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{position:'top',align:'end'}},
+    scales:{
+      y:{ ticks:{ callback:v=>v+'/1K' } }
+    }
+  }
+});
+
+// MDRO polar
+new Chart(CTX('mdroChart'), {
+  type:'polarArea',
+  data:{
+    labels:['MRSA','VRE','C. diff','ESBL E.coli','CRE','Candida auris'],
+    datasets:[{ data:[38,22,28,17,8,4], backgroundColor:[hexToRgba(RED,0.7),hexToRgba(AMBER,0.7),hexToRgba(TEAL,0.7),hexToRgba(INDIGO,0.7),hexToRgba(PINK,0.7),hexToRgba(GREEN,0.7)] }]
+  },
+  options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'right'}} }
+});
+
+// Compliance grouped bar
+new Chart(CTX('complianceChart'), {
+  type:'bar',
+  data:{
+    labels:['Hand Hygiene','PPE Use','Isolation Precautions','Environmental Clean','Sterilization','Cohorting'],
+    datasets:[
+      { label:'SNF', data:[92,88,95,78,84,90], backgroundColor:hexToRgba(TEAL,0.8), borderRadius:3, borderSkipped:false },
+      { label:'Acute Care', data:[98,97,99,95,99,96], backgroundColor:hexToRgba(INDIGO,0.8), borderRadius:3, borderSkipped:false },
+      { label:'ALF', data:[81,74,79,70,76,83], backgroundColor:hexToRgba(AMBER,0.8), borderRadius:3, borderSkipped:false }
+    ]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{position:'top',align:'end'}},
+    scales:{ x:{ticks:{font:{size:9}}}, y:{ min:60, max:100, ticks:{ callback:v=>v+'%' } } }
+  }
+});
+
+// Sparklines
+function drawSparkline(id, data, color) {
+  const c = C(id); if (!c) return;
+  new Chart(c.getContext('2d'), {
+    type:'line',
+    data:{ labels:data.map((_,i)=>i), datasets:[{ data, borderColor:color, borderWidth:1.5, pointRadius:0, tension:0.4, fill:true, backgroundColor:hexToRgba(color,0.12) }] },
+    options:{ responsive:false, animation:false, plugins:{legend:{display:false},tooltip:{enabled:false}}, scales:{ x:{display:false}, y:{display:false} } }
+  });
+}
+drawSparkline('spark1',[5.1,4.8,4.2,3.9,3.5,3.2],TEAL);
+drawSparkline('spark2',[6.2,5.8,5.5,5.1,4.9,4.7],INDIGO);
+drawSparkline('spark3',[8.1,7.4,6.9,6.5,6.2,5.9],AMBER);
+drawSparkline('spark4',[8.9,8.2,7.6,7.0,6.5,6.1],RED);
+drawSparkline('spark5',[4.1,3.8,3.5,3.2,3.0,2.8],PINK);
+
+/* ─── PAGE 3 CHARTS ─── */
+const wks = ['W1','W4','W8','W12','W16','W20','W24','W28','W32','W36','W40','W44','W48','W52','W56','W60','W64','W68','W72','W76','W80','W84'];
+const covidCtx = CTX('covidOpsChart');
+new Chart(covidCtx, {
+  type:'bar',
+  data:{
+    labels: wks,
+    datasets:[
+      { label:'Cases Investigated', data:[180,420,780,1240,980,760,640,520,480,560,840,1100,920,760,640,540,460,400,360,320,280,240], backgroundColor:hexToRgba(TEAL,0.8), borderRadius:3, borderSkipped:false },
+      { label:'Contacts Traced', data:[540,1260,2340,3720,2940,2280,1920,1560,1440,1680,2520,3300,2760,2280,1920,1620,1380,1200,1080,960,840,720], type:'line', yAxisID:'y2', ...lineDefaults, borderColor:AMBER, fill:false }
+    ]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{position:'top',align:'end'}},
+    scales:{
+      y:{ position:'left', ticks:{callback:v=>v.toLocaleString()} },
+      y2:{ position:'right', grid:{drawOnChartArea:false}, ticks:{callback:v=>v.toLocaleString()} }
+    }
+  }
+});
+
+const dqCtx = CTX('dataQualityChart');
+new Chart(dqCtx, {
+  type:'line',
+  data:{
+    labels:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar'],
+    datasets:[
+      { label:'Data Accuracy %', data:[72,73,75,76,78,80,82,84,86,87,89,90,91,92,93], ...lineDefaults, borderColor:INDIGO, backgroundColor:makeGrad(dqCtx,INDIGO), fill:true },
+      { label:'Completeness %', data:[68,70,73,76,79,82,83,85,86,88,89,91,92,93,95], ...lineDefaults, borderColor:GREEN, fill:false }
+    ]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{position:'top',align:'end'}},
+    scales:{ y:{ min:60, max:100, ticks:{callback:v=>v+'%'} } }
+  }
+});
+
+new Chart(CTX('paOutcomeChart'), {
+  type:'doughnut',
+  data:{
+    labels:['Approved — First Pass','Approved — After Appeal','Denied — Clinical','Pending — Info Needed','Withdrawn'],
+    datasets:[{ data:[62,18,9,7,4], backgroundColor:[hexToRgba(GREEN,0.85),hexToRgba(TEAL,0.85),hexToRgba(RED,0.85),hexToRgba(AMBER,0.85),hexToRgba(MUTED,0.85)], borderColor:'#ffffff', borderWidth:3, hoverOffset:6 }]
+  },
+  options:{ responsive:true, maintainAspectRatio:false, cutout:'60%', plugins:{legend:{position:'right',labels:{font:{size:10}}}} }
+});
+
+/* ─── PAGE 4 CHARTS ─── */
+const epicCtx = CTX('epicurveChart');
+new Chart(epicCtx, {
+  type:'bar',
+  data:{
+    labels:['Mar 1','Mar 5','Mar 9','Mar 13','Mar 17','Mar 21','Mar 25','Mar 29','Apr 2','Apr 6','Apr 10','Apr 14','Apr 18','Apr 22','Apr 26','Apr 30','May 4','May 8','May 12','May 16','May 20'],
+    datasets:[
+      { label:'Confirmed Cases', data:[2,5,12,28,64,118,187,243,298,334,312,278,241,198,162,128,94,72,51,38,24], backgroundColor:hexToRgba(TEAL,0.8), borderRadius:3, borderSkipped:false },
+      { label:'Probable Cases', data:[1,3,7,14,31,58,90,115,138,152,144,128,110,90,75,59,43,33,24,18,11], backgroundColor:hexToRgba(INDIGO,0.5), borderRadius:3, borderSkipped:false }
+    ]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{position:'top',align:'end'}},
+    scales:{
+      x:{stacked:false, ticks:{font:{size:9},maxRotation:45}},
+      y:{stacked:false, ticks:{callback:v=>v.toLocaleString()}}
+    }
+  }
+});
+
+new Chart(CTX('ageChart'), {
+  type:'bar',
+  data:{
+    labels:['0–9','10–17','18–29','30–39','40–49','50–59','60–69','70–79','80+'],
+    datasets:[
+      { label:'Attack Rate (vaccinated)', data:[24,31,58,62,71,88,104,138,162], backgroundColor:hexToRgba(TEAL,0.8), borderRadius:3, borderSkipped:false },
+      { label:'Attack Rate (unvaccinated)', data:[89,114,210,248,312,398,487,612,780], backgroundColor:hexToRgba(RED,0.75), borderRadius:3, borderSkipped:false }
+    ]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{position:'top',align:'end'}},
+    scales:{
+      x:{ticks:{font:{size:10}}},
+      y:{ticks:{callback:v=>v+'/100K'}}
+    }
+  }
+});
+
+// Odds Ratio Forest Plot (horizontal bar)
+new Chart(CTX('orChart'), {
+  type:'bar',
+  data:{
+    labels:['Unvaccinated (ref)','Underlying condition','Age ≥ 65','LTCF resident','No PPE use','Indoor gathering','Shared household'],
+    datasets:[
+      { label:'Odds Ratio', data:[1.0,2.3,3.8,4.2,3.1,2.7,2.1], backgroundColor:[hexToRgba(MUTED,0.6),hexToRgba(AMBER,0.8),hexToRgba(RED,0.8),hexToRgba(RED,0.9),hexToRgba(AMBER,0.8),hexToRgba(AMBER,0.7),hexToRgba(TEAL,0.7)], borderRadius:4, borderSkipped:false }
+    ]
+  },
+  options:{
+    indexAxis:'y',
+    responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{
+      x:{
+        beginAtZero:true,
+        ticks:{ callback:v=>'OR '+v },
+        grid:{ color:'rgba(0,0,0,0.06)' }
+      },
+      y:{ ticks:{ font:{size:10} } }
+    }
+  }
+});
+
+/* ─── TAB SWITCHING ─── */
+function showPage(idx, el) {
+  document.querySelectorAll('.page').forEach((p,i)=>p.classList.toggle('active',i===idx));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+/* ─── SLICER (visual only — updates KPI labels) ─── */
+function updateSurveillance() {
+  const yr = C('yearSlicer').value;
+  const disease = C('diseaseSlicer').value;
+  const caseMap = { all:{ all:'20,847', covid:'18,210', flu:'1,847', tb:'421', hiv:'369'}, '2020':{ all:'4,210', covid:'3,820', flu:'298', tb:'62', hiv:'30'}, '2021':{ all:'7,482', covid:'6,950', flu:'320', tb:'112', hiv:'100'}, '2022':{ all:'4,118', covid:'3,680', flu:'240', tb:'108', hiv:'90'}, '2023':{ all:'3,240', covid:'2,900', flu:'210', tb:'82', hiv:'48'}, '2024':{ all:'1,797', covid:'860', flu:'779', tb:'57', hiv:'101'} };
+  const map = caseMap[yr] || caseMap.all;
+  C('kpi-cases').textContent = (map[disease] || map.all).toLocaleString();
+}
+
+function setProgramFilter(val, el) {
+  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+}
+</script>
+</body>
+</html>
